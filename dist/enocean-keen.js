@@ -1,10 +1,12 @@
-var EnoceanTelegram, Keen, dimmableLight, init, keenSend, onOffLight, temperature, withErrorHandling, _;
+var Bacon, EnoceanTelegram, Keen, dimmableLight, init, keenSend, minutely, onOffLight, repeated, temperature, withErrorHandling, _;
 
 _ = require("lodash");
 
 Keen = require("keen.io");
 
 EnoceanTelegram = require("./enocean-telegram");
+
+Bacon = require("baconjs");
 
 temperature = function(location, min, max) {
   if (min == null) {
@@ -25,7 +27,7 @@ temperature = function(location, min, max) {
 };
 
 dimmableLight = function(group, name) {
-  return function(telegram, keenClient) {
+  return repeated(function(telegram, keenClient) {
     var brightness;
     brightness = telegram.buffer[8];
     return keenSend(keenClient, "lights", {
@@ -35,11 +37,11 @@ dimmableLight = function(group, name) {
       brightness: brightness,
       device: telegram.enoceanAddress()
     });
-  };
+  });
 };
 
 onOffLight = function(group, name) {
-  return function(telegram, keenClient) {
+  return repeated(function(telegram, keenClient) {
     var brightness;
     brightness = telegram.buffer[9] * 100;
     return keenSend(keenClient, "lights", {
@@ -49,6 +51,19 @@ onOffLight = function(group, name) {
       brightness: brightness,
       device: telegram.enoceanAddress()
     });
+  });
+};
+
+minutely = 60000;
+
+repeated = function(fn) {
+  var bus;
+  bus = new Bacon.Bus;
+  bus.flatMap(function(x) {
+    return Bacon.once(x).merge(Bacon.interval(minutely, x));
+  }).onValues(fn);
+  return function(telegram, keenClient) {
+    return bus.push([telegram, keenClient]);
   };
 };
 

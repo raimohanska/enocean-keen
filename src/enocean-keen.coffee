@@ -1,21 +1,30 @@
 _ = require "lodash"
 Keen = require "keen.io"
 EnoceanTelegram = require "./enocean-telegram"
+Bacon = require "baconjs"
 
 temperature = (location, min = 0, max = 40) -> (telegram, keenClient) ->
   temperature = (255 - telegram.buffer[9]) / 255 * (max - min) + min
   keenSend keenClient, "sensors",
     { type: "temperature", location: location, value: temperature, device: telegram.enoceanAddress() }
 
-dimmableLight = (group, name) -> (telegram, keenClient) ->
+dimmableLight = (group, name) -> repeated (telegram, keenClient) ->
   brightness = telegram.buffer[8]
   keenSend keenClient, "lights",
     { type: "brightness", location: group, light: name, brightness, device: telegram.enoceanAddress() }
 
-onOffLight = (group, name) -> (telegram, keenClient) ->
+onOffLight = (group, name) -> repeated (telegram, keenClient) ->
   brightness = telegram.buffer[9] * 100
   keenSend keenClient, "lights",
     { type: "brightness", location: group, light: name, brightness, device: telegram.enoceanAddress() }
+
+minutely=60000
+repeated = (fn) ->
+  bus = new Bacon.Bus
+  bus
+    .flatMap (x) -> Bacon.once(x).merge(Bacon.interval(minutely, x))
+    .onValues fn
+  (telegram, keenClient) -> bus.push [telegram, keenClient]
 
 keenSend = (keenClient, collection, event) ->
   console.log "Send to keen", collection, event

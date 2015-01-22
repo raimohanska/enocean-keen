@@ -4,7 +4,8 @@
   "dependencies": {
     "coffee-script": "1.7.1",
     "lodash": "^2.4.1",
-    "keen.io": "^0.1"
+    "keen.io": "^0.1",
+    "baconjs": "^0.7"
   },
   "devDependencies": {
     "grunt": "0.4",
