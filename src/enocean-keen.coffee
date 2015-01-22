@@ -51,4 +51,4 @@ init = ({ keenClient, lights, sensors}) ->
       console.log "sent data to unknown device", telegram.toString()
   { receivedData, sentData }
 
-module.exports = { init, onOffLight, dimmableLight, temperature }
+module.exports = { init, onOffLight, dimmableLight, temperature, EnoceanTelegram }

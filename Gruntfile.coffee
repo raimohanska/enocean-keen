@@ -11,13 +11,14 @@ module.exports = (grunt) ->
         src: ['*.coffee']
         dest: 'dist'
         ext: '.js'
+    watch:
+      coffee:
+        files: 'src/*.coffee'
+        tasks: 'coffee:compile'
 
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
-  grunt.loadNpmTasks 'grunt-text-replace'
-  grunt.loadNpmTasks 'grunt-coffeelint'
 
   grunt.registerTask 'default', ['coffee:compile']

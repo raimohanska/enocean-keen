@@ -110,5 +110,6 @@ module.exports = {
   init: init,
   onOffLight: onOffLight,
   dimmableLight: dimmableLight,
-  temperature: temperature
+  temperature: temperature,
+  EnoceanTelegram: EnoceanTelegram
 };
