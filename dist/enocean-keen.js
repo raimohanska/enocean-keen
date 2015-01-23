@@ -59,7 +59,7 @@ minutely = 60000;
 repeated = function(fn) {
   var bus;
   bus = new Bacon.Bus;
-  bus.flatMap(function(x) {
+  bus.flatMapLatest(function(x) {
     return Bacon.once(x).merge(Bacon.interval(minutely, x));
   }).onValues(fn);
   return function(telegram, keenClient) {

@@ -22,7 +22,7 @@ minutely=60000
 repeated = (fn) ->
   bus = new Bacon.Bus
   bus
-    .flatMap (x) -> Bacon.once(x).merge(Bacon.interval(minutely, x))
+    .flatMapLatest (x) -> Bacon.once(x).merge(Bacon.interval(minutely, x))
     .onValues fn
   (telegram, keenClient) -> bus.push [telegram, keenClient]
 
