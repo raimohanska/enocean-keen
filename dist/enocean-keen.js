@@ -1,4 +1,4 @@
-var Bacon, EnoceanTelegram, Keen, dimmableLight, init, keenSend, minutely, onOffLight, repeated, temperature, withErrorHandling, _;
+var Bacon, EnoceanTelegram, Keen, dimmableLight, hourly, init, keenSend, onOffLight, repeated, temperature, withErrorHandling, _;
 
 _ = require("lodash");
 
@@ -54,13 +54,13 @@ onOffLight = function(group, name) {
   });
 };
 
-minutely = 60000;
+hourly = 3600 * 1000;
 
 repeated = function(fn) {
   var bus;
   bus = new Bacon.Bus;
   bus.flatMapLatest(function(x) {
-    return Bacon.once(x).merge(Bacon.interval(minutely, x));
+    return Bacon.once(x).merge(Bacon.interval(hourly, x));
   }).onValues(fn);
   return function(telegram, keenClient) {
     return bus.push([telegram, keenClient]);
