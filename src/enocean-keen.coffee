@@ -22,6 +22,7 @@ hourly=3600 * 1000
 repeated = (fn) ->
   bus = new Bacon.Bus
   bus
+    .throttle(1000)
     .flatMapLatest (x) -> Bacon.once(x).merge(Bacon.interval(hourly, x))
     .onValues fn
   (telegram, keenClient) -> bus.push [telegram, keenClient]

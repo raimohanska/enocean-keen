@@ -59,7 +59,7 @@ hourly = 3600 * 1000;
 repeated = function(fn) {
   var bus;
   bus = new Bacon.Bus;
-  bus.flatMapLatest(function(x) {
+  bus.throttle(1000).flatMapLatest(function(x) {
     return Bacon.once(x).merge(Bacon.interval(hourly, x));
   }).onValues(fn);
   return function(telegram, keenClient) {
