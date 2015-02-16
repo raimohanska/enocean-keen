@@ -18,11 +18,11 @@ onOffLight = (group, name) -> repeated (telegram, keenClient) ->
   keenSend keenClient, "lights",
     { type: "brightness", location: group, light: name, brightness, device: telegram.enoceanAddress() }
 
-minutely=60000
+hourly=3600 * 1000
 repeated = (fn) ->
   bus = new Bacon.Bus
   bus
-    .flatMapLatest (x) -> Bacon.once(x).merge(Bacon.interval(minutely, x))
+    .flatMapLatest (x) -> Bacon.once(x).merge(Bacon.interval(hourly, x))
     .onValues fn
   (telegram, keenClient) -> bus.push [telegram, keenClient]
 
